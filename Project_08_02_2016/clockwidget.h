@@ -2,6 +2,7 @@
 #define CLOCKWIDGET_H
 
 #include <QWidget>
+#include <QDateTime>
 
 class ClockWidget : public QWidget
 {
@@ -9,14 +10,12 @@ class ClockWidget : public QWidget
 public:
     explicit ClockWidget(QWidget *parent = 0);
 
-    void SetTime(int seconds);
-    void SetTime(int hours, int minutes, int seconds);
-
 protected:
     void paintEvent(QPaintEvent *);
+    void timerEvent(QTimerEvent *event);
 
 private:
-    int secondCount;
+    int m_timerId;
 
 signals:
 
