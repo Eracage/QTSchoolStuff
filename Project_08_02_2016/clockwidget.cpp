@@ -3,16 +3,43 @@
 #include <QVector2D>
 #include <QPolygon>
 #include <QTimerEvent>
+#include <QStyle>
 
 ClockWidget::ClockWidget(QWidget *parent) : QWidget(parent)
 {
     m_timerId = startTimer(50);
+    systime = true;
+}
+
+void ClockWidget::setTime(QTime time)
+{
+    systime = false;
+    dateTime.setTime(time);
+}
+
+void ClockWidget::setDate(QDate date)
+{
+    systime = false;
+    dateTime.setDate(date);
+}
+
+void ClockWidget::setDateTime(QDateTime dateT)
+{
+    systime = false;
+    dateTime = dateT;
+}
+
+void ClockWidget::setCurTime()
+{
+    systime = true;
 }
 
 void ClockWidget::paintEvent(QPaintEvent *)
 {
     QPointF center((width())/2.0f, (height())/2.0f);
     float clockSize = height() > width() ? width()-3 : height()-3;
+    if (clockSize <= 0)
+        return;
 
     QPainter painter(this);
     QPen pen;
@@ -22,11 +49,15 @@ void ClockWidget::paintEvent(QPaintEvent *)
 
     painter.translate(center);
 
-    QTime time = QDateTime::currentDateTime().time();
+    if (systime)
+        dateTime = QDateTime::currentDateTime();
+
+    QTime time = dateTime.time();
 
     pen.setCapStyle(Qt::FlatCap);
 
-    pen.setColor(QColor(0,255,0));
+
+    pen.setColor(palette().mid().color());
     pen.setWidthF(clockSize*0.01);
     painter.setPen(pen);
 
@@ -38,6 +69,7 @@ void ClockWidget::paintEvent(QPaintEvent *)
     }
     painter.restore();
 
+    palette().
     pen.setColor(QColor(255,0,0));
     pen.setWidthF(clockSize*0.02);
     painter.setPen(pen);
@@ -55,6 +87,73 @@ void ClockWidget::paintEvent(QPaintEvent *)
     painter.setPen(pen);
 
     painter.drawEllipse(QPointF(),clockSize * 0.485f, clockSize * 0.485f);
+
+
+    QFont font("Helvetica");
+    font.setPointSizeF(clockSize * 0.05f);
+    painter.setFont(font);
+    //pen.setWidthF(clockSize*0.05f);
+
+    QString weekday = "";
+    switch (dateTime.date().dayOfWeek())
+    {
+    case 1: weekday = "Monday";
+        break;
+    case 2: weekday = "Tuesday";
+        break;
+    case 3: weekday = "Wednesday";
+        break;
+    case 4: weekday = "Thursday";
+        break;
+    case 5: weekday = "Friday";
+        break;
+    case 6: weekday = "Saturday";
+        break;
+    case 7: weekday = "Sunday";
+        break;
+    default:
+        break;
+    }
+
+    painter.drawText(
+                -clockSize*0.35f,
+                -clockSize*0.3f,
+                clockSize*0.35f,
+                clockSize*0.1f,
+                Qt::AlignCenter,
+                weekday);
+
+    font.setPointSizeF(clockSize * 0.15f);
+    painter.setFont(font);
+
+    painter.drawText(
+                -clockSize*0.3f,
+                -clockSize*0.2f,
+                clockSize*0.25f,
+                clockSize*0.25f,
+                Qt::AlignCenter,
+                QString::number(dateTime.date().day()));
+
+
+    painter.drawText(
+                clockSize*0.05f,
+                -clockSize*0.2f,
+                clockSize*0.25f,
+                clockSize*0.25f,
+                Qt::AlignCenter,
+                QString::number(dateTime.date().month()));
+
+    font.setPointSizeF(clockSize * 0.10f);
+    painter.setFont(font);
+
+    painter.drawText(
+                -clockSize*0.3f,
+                clockSize*0.05f,
+                clockSize*0.6f,
+                clockSize*0.25f,
+                Qt::AlignCenter,
+                QString::number(dateTime.date().year()));
+
 
     painter.setPen(Qt::NoPen);
 

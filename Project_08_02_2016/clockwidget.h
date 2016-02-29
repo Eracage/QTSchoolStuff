@@ -10,12 +10,19 @@ class ClockWidget : public QWidget
 public:
     explicit ClockWidget(QWidget *parent = 0);
 
+    void setTime(QTime time);
+    void setDate(QDate date);
+    void setDateTime(QDateTime dateT);
+    void setCurTime();
+
 protected:
     void paintEvent(QPaintEvent *);
     void timerEvent(QTimerEvent *event);
 
 private:
     int m_timerId;
+    QDateTime dateTime;
+    bool systime;
 
 signals:
 
