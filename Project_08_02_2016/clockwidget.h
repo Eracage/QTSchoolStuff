@@ -22,6 +22,7 @@ protected:
 private:
     int m_timerId;
     QDateTime dateTime;
+    QDateTime targetTime;
     bool systime;
 
 signals:
